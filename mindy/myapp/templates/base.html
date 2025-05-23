@@ -1,0 +1,47 @@
+{% load static %}
+{% load pwa %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static '\css\style.css' %}" >
+
+    {% progressive_web_app_meta %}
+
+</head>
+
+<body>
+    <header>
+
+        <img src="{% static 'img/UR-Mindy.png' %}" class="logo" alt="UR-Mindy">
+
+
+    </header>
+    <div class="container">
+        <img src="{% static 'img/UR-Mindy.png' %}" class="logo" alt="UR-Mindy">
+        <h3>Iniciar Sesión</h3>
+
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="input-group">
+                <i>👤</i>
+                <input type="text" name="username" placeholder="Nombre de usuario" required>
+            </div>
+            <div class="input-group">
+                <i>🔑</i>
+                <input type="password" name="password" placeholder="Contraseña" required>
+            </div>
+            <button type="submit" class="button">Ingresar</button>
+            <button type="submit" class="button2">Crear cuenta</button>
+        </form>
+
+        <p class="credits">Hecho por:</p>
+        <div class="logos">
+            <img src="{% static 'img/logos.png' %}" alt="Logo 1">
+        </div>
+    </div>
+</body>
+</html>

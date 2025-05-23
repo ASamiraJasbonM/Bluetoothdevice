@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy-Crear cuenta</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+
+</head>
+
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='{% url 'home' %}'">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </button>
+        <span class="header-title">Registro de Cuenta</span>
+    </header>
+    <div class="form-container">
+        <h2>Registro de Cuenta</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Crear cuenta</button>
+        </form>
+
+    </div>
+    <a href="{% url 'home' %}" class="button2">Volver al inicio</a>
+</body>
+
+</html>

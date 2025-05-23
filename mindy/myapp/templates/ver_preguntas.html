@@ -1,0 +1,15 @@
+<h2>Preguntas registradas</h2>
+
+{% for pregunta in preguntas %}
+    <div style="border: 1px solid #ccc; margin: 10px; padding: 10px;">
+    <strong>#{{ pregunta.id }}:</strong> {{ pregunta.texto }} <br>
+    <em>Tipo: {{ pregunta.tipo.nombre }}</em><br>
+    {% for respuesta in pregunta.respuestas.all %}
+    <button>{{ respuesta.texto }} ({{ respuesta.valor }})</button>
+    {% endfor %}
+    <form method="POST" action="{% url 'eliminar_pregunta' pregunta.id %}">
+    {% csrf_token %}
+    <button type="submit" style="color:red;">❌ Eliminar</button>
+    </form>
+    </div>
+{% endfor %}

@@ -1,0 +1,307 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css\style.css' %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='{% url 'menu' %}'">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </button>
+        <span class="header-title">Mis mediciones</span>
+    </header>
+
+
+    <div class="form-container">
+        <h3>📡 Sensor BLE: Lectura en Tiempo Real</h3>
+        <button onclick="conectarBluetooth()">Conectar dispositivo BLE</button>
+
+        <!-- Mostrar los datos en la pantalla -->
+        <div class="dato">🌡️ Temperatura Ambiente: <span id="temperaturaAmbiente">--</span></div>
+        <div class="dato">🌡️ Temperatura Corporal: <span id="temperaturaCorporal">--</span></div>
+        <div class="dato">❤️ BPM: <span id="bpm">--</span></div>
+        <div class="dato">💓 Avg BPM: <span id="avgBpm">--</span></div>
+        <div class="dato">👁️ IR: <span id="estado">--</span></div>
+        <div class="dato">💧 Humedad: <span id="humedad">--</span></div>
+        <div class="dato">📅 Timestamp: <span id="fecha">--</span></div>
+
+        <!-- Canvas para los gráficos -->
+        <canvas id="graficoTemperaturaAmbiente" width="400" height="200"></canvas>
+        <canvas id="graficoTemperaturaCorporal" width="400" height="200"></canvas>
+        <canvas id="graficoBPM" width="400" height="200"></canvas>
+        <canvas id="graficoAvgBPM" width="400" height="200"></canvas>
+        <canvas id="graficoIR" width="400" height="200"></canvas>
+        <canvas id="graficoHumedad" width="400" height="200"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const SERVICE_UUID = "19b10000-e8f2-537e-4f6c-d104768a1214"
+        const CHARACTERISTIC_UUID = "19b10001-e8f2-537e-4f6c-d104768a1214"
+        let buffer = "";
+
+        // Gráficos para mostrar los datos
+        const ctxTemperaturaAmbiente = document.getElementById('graficoTemperaturaAmbiente').getContext('2d');
+        const ctxTemperaturaCorporal = document.getElementById('graficoTemperaturaCorporal').getContext('2d');
+        const ctxBPM = document.getElementById('graficoBPM').getContext('2d');
+        const ctxAvgBPM = document.getElementById('graficoAvgBPM').getContext('2d');
+        const ctxIR = document.getElementById('graficoIR').getContext('2d');
+        const ctxHumedad = document.getElementById('graficoHumedad').getContext('2d');
+        const graficoTemperaturaAmbiente = new Chart(ctxTemperaturaAmbiente, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Temperatura Ambiente (°C)',
+                    data: [],
+                    borderColor: 'rgb(75, 192, 192)',
+                    fill: false
+                }]
+            }
+        });
+
+        const graficoTemperaturaCorporal = new Chart(ctxTemperaturaCorporal, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Temperatura Corporal (°C)',
+                    data: [],
+                    borderColor: 'rgb(255, 99, 132)',
+                    fill: false
+                }]
+            }
+        });
+
+        const graficoBPM = new Chart(ctxBPM, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'BPM',
+                    data: [],
+                    borderColor: 'rgb(54, 162, 235)',
+                    fill: false
+                }]
+            }
+        });
+
+        const graficoAvgBPM = new Chart(ctxAvgBPM, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Avg BPM',
+                    data: [],
+                    borderColor: 'rgb(153, 102, 255)',
+                    fill: false
+                }]
+            }
+        });
+
+        const graficoIR = new Chart(ctxIR, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'IR',
+                    data: [],
+                    borderColor: 'rgb(255, 159, 64)',
+                    fill: false
+                }]
+            }
+        });
+
+        const graficoHumedad = new Chart(ctxHumedad, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Humedad (%)',
+                    data: [],
+                    borderColor: 'rgb(75, 192, 192)',
+                    fill: false
+                }]
+            }
+        });
+
+        function limpiarJson(raw) {
+            try {
+                const text = new TextDecoder().decode(raw);
+                return text.replace(/\n|\r|\s/g, "");
+            } catch (e) {
+                console.error("Error decodificando datos:", e);
+                return "";
+            }
+        }
+
+        function esJsonValido(cadena) {
+            return cadena.startsWith("{") && cadena.endsWith("}");
+        }
+
+        function procesarBuffer(dato) {
+            buffer += dato;
+            while (buffer.includes("{") && buffer.includes("}")) {
+                const inicio = buffer.indexOf("{");
+                const fin = buffer.indexOf("}") + 1;
+                if (fin > inicio) {
+                    const posibleJson = buffer.slice(inicio, fin);
+                    buffer = buffer.slice(fin);
+                    if (esJsonValido(posibleJson)) {
+                        try {
+                            const jsonData = JSON.parse(posibleJson);
+                            console.log("Datos procesados: ", jsonData);  // Verificar los datos
+                            //mostrarDatos(jsonData);
+                            actualizarGraficos(jsonData);
+                            enviarDatosAlServidor(jsonData);
+                        } catch (e) {
+                            console.warn("JSON inválido:", posibleJson);
+                        }
+                    }
+                }
+            }
+        }
+
+        /*function mostrarDatos(data) {
+            // Mostrar los datos en la pantalla
+            document.getElementById("temperaturaAmbiente").textContent = `🌡️ Temperatura Ambiente: ${data.temperaturaAmbiente} °C`;
+            document.getElementById("temperaturaCorporal").textContent = `🌡️ Temperatura Corporal: ${data.temperaturaCorporal} °C`;
+            document.getElementById("bpm").textContent = `❤️ BPM: ${data.BPM}`;
+            document.getElementById("avgBpm").textContent = `💓 Avg BPM: ${data.AvgBPM}`;
+            document.getElementById("ir").textContent = `👁️ IR: ${data.IR}`;
+            document.getElementById("Humedad").textContent = `💧 Humedad: ${data.Humedad} %`;
+        }*/
+
+        function actualizarGraficos(data) {
+            // Actualizar los gráficos con los nuevos datos
+            graficoTemperaturaAmbiente.data.labels.push(new Date().toLocaleTimeString());
+            graficoTemperaturaAmbiente.data.datasets[0].data.push(data.temperatura_ambiental);
+            graficoTemperaturaAmbiente.update();
+
+            graficoTemperaturaCorporal.data.labels.push(new Date().toLocaleTimeString());
+            graficoTemperaturaCorporal.data.datasets[0].data.push(data.temperatura_corporal);
+            graficoTemperaturaCorporal.update();
+
+            graficoBPM.data.labels.push(new Date().toLocaleTimeString());
+            graficoBPM.data.datasets[0].data.push(data.bpm);
+            graficoBPM.update();
+
+            graficoAvgBPM.data.labels.push(new Date().toLocaleTimeString());
+            graficoAvgBPM.data.datasets[0].data.push(data.avg_bpm);
+            graficoAvgBPM.update();
+
+            graficoIR.data.labels.push(new Date().toLocaleTimeString());
+            graficoIR.data.datasets[0].data.push(data.estado);
+            graficoIR.update();
+
+            graficoHumedad.data.labels.push(new Date().toLocaleTimeString());
+            graficoHumedad.data.datasets[0].data.push(data.humedad);
+            graficoHumedad.update();
+        }
+
+        async function enviarDatosAlServidor(data) {
+            console.log(data)
+            try {
+                const response = await fetch("{% url 'agregar_dato_sensor' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+                console.log(result);
+            } catch (error) {
+                console.error("❌ Error al enviar los datos:", error);
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                const cookies = document.cookie.split(";");
+                for (let c of cookies) {
+                    const [key, value] = c.trim().split("=");
+                    if (key === name) {
+                        cookieValue = decodeURIComponent(value);
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        async function conectarBluetooth() {
+            try {
+                console.log("🔍 Buscando dispositivo BLE...");
+                const device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: [SERVICE_UUID]
+                });
+
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService(SERVICE_UUID);
+                const characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+
+                await characteristic.startNotifications();
+                characteristic.addEventListener('characteristicvaluechanged', (event) => {
+                    const raw = event.target.value;
+                    const limpio = limpiarJson(raw);
+                    if (limpio) procesarBuffer(limpio);
+                });
+
+                console.log("✅ Conectado y recibiendo datos BLE...");
+            } catch (error) {
+                console.error("❌ Error al conectar con BLE:", error);
+            }
+        }
+
+        function fetchSensorData() {
+            fetch('/api/guardar_dato_ble')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+
+                    document.getElementById("temperaturaAmbiente").innerText = data.temperatura_ambiental + " °C";
+                    document.getElementById("temperaturaCorporal").innerText = data.temperatura_corporal + " °C";
+                    document.getElementById("bpm").innerText = data.bpm;
+                    document.getElementById("avgBpm").innerText = data.avg_bpm;
+                    document.getElementById("estado").innerText = data.estado;
+                    document.getElementById("humedad").innerText = data.humedad + " %";
+                    document.getElementById("fecha").innerText = data.timestamp;
+
+                    actualizarGraficos(data);
+                    enviarDatosAlServidor(data);
+                })
+
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        setInterval(fetchSensorData, 3000);
+    </script>
+
+
+</body>
+
+</html>

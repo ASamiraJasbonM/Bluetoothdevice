@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy-Crear cuenta</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static '\css\style.css' %}" >
+
+</head>
+
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='{% url 'home' %}'">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <span class="header-title">Registro de Cuenta</span>
+    </header>
+    <div class="form-container">
+<p><strong>Última actualización:</strong> [fecha]</p>
+
+    <h2>1. Aceptación</h2>
+    <p>
+        El acceso y uso de la aplicación UR Mindy implica la aceptación plena y sin reservas de los presentes términos. Si no está de acuerdo, por favor absténgase de usar la aplicación.
+    </p>
+
+    <h2>2. Descripción del Servicio</h2>
+    <p>
+        UR Mindy es una aplicación desarrollada en el marco del Proyecto Mindy, de la Universidad del Rosario, orientada al acompañamiento, seguimiento y monitoreo de la salud de usuarios con condiciones médicas específicas, mediante el registro de datos clínicos, recordatorios de citas y asistencia remota.
+    </p>
+
+    <h2>3. Obligaciones del Usuario</h2>
+    <p>El usuario se compromete a:</p>
+    <ul>
+        <li>Proporcionar información veraz y actualizada.</li>
+        <li>No suplantar a otra persona.</li>
+        <li>Usar la aplicación únicamente con fines personales de salud y bajo los lineamientos del Proyecto Mindy.</li>
+        <li>Reportar fallos, errores o usos indebidos.</li>
+    </ul>
+
+    <h2>4. Uso de la Aplicación</h2>
+    <p>
+        UR Mindy no sustituye una consulta médica presencial ni constituye un diagnóstico clínico definitivo. Toda información entregada por la aplicación es de carácter orientativo y debe ser validada por profesionales de salud autorizados.
+    </p>
+
+    <h2>5. Limitación de Responsabilidad</h2>
+    <p>La Universidad del Rosario no será responsable por:</p>
+    <ul>
+        <li>Fallas técnicas o interrupciones del servicio.</li>
+        <li>Decisiones tomadas por el usuario con base en la información emitida por la aplicación.</li>
+        <li>Daños derivados del mal uso de la aplicación.</li>
+    </ul>
+
+    <h2>6. Propiedad Intelectual</h2>
+    <p>
+        Todo el contenido, diseño y código fuente de la aplicación UR Mindy es propiedad de la Universidad del Rosario. Está prohibida su reproducción, distribución o modificación sin autorización expresa.
+    </p>
+
+    <h2>7. Modificaciones</h2>
+    <p>
+        La Universidad del Rosario se reserva el derecho a modificar estos términos en cualquier momento. Las modificaciones serán informadas a través de la aplicación o los canales institucionales.
+    </p>
+
+    <h2>8. Contacto</h2>
+    <p>
+        Para consultas sobre el uso de la aplicación o ejercicio de derechos como titular de datos, puede contactarse a:
+    </p>
+    <ul>
+        <li>📧 [correo electrónico]</li>
+        <li>📞 [número de contacto]</li>
+        <li>📍 Universidad del Rosario, Bogotá, Colombia.</li>
+    </ul>
+    </div>
+
+</body>
+</html>

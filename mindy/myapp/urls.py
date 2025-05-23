@@ -1,0 +1,43 @@
+from django.urls import path, include
+from . import views
+
+urlpatterns=[
+    
+    path("", views.login_view, name="home"),
+    path("crear_cuenta/", views.crear_cuenta, name="crear_cuenta"),
+    path('politica/', views.politica_view, name='politica'),
+    path('terminos/', views.terminos_view, name='terminos'),
+
+    path('cambiar_contraseña/', views.cambiar_contraseña, name='cambiar_contraseña'),
+    path("menu/", views.menu, name="menu"),
+    path("usuario/", views.misdatosp, name="usuario"),
+    path("llamadas/", views.llamadas, name="llamadas"),
+    path("educativo/", views.educativ, name="educativo"),
+    path("general/", views.preguntaseguimiento, name="general"),
+    path("registrar-cuenta", views.regiscuenta, name="registrar-cuenta"),
+    path("mis-citas", views.citas, name="mis-citas"),
+    path("dispositivoc", views.dispc, name="dispositivoc"),
+    path('encuesta/', views.ultima_encuesta, name='encuesta'),
+    path('encuestauser/', views.ultima_encuesta, name='encuestauser'),
+    path("menu_profesional/", views.menu_profesional, name="menu_profesional"),
+    path('new-patient/', views.new_patient, name='new-patient'),
+    path('agregar-educativo/', views.agregar_educativo, name='agregar_educativo'),
+    path('foro/', views.foro_view, name='foro'),
+    path('citas_paciente/', views.citas_paciente, name='citas_paciente'),
+    path('citas_profesional/', views.citas_profesional, name='citas_profesional'),
+    path('buscar_usuario/', views.buscar_usuario, name='buscar_usuario'),
+    path('menu_profesional/<int:usuario_id>/', views.menu_profesional, name='menu_profesional'),
+    path('descargar_excel/', views.exportar_excel, name='descargar_excel'),
+    path('datos_generales/', views.descargar_datos, name='datos_generales'),
+    path('import_excel/', views.import_excel, name='import_excel'),
+    path('eliminar_usuario/', views.eliminar_usuario, name='eliminar_usuario'),
+    path('cargar/', views.cargar_excel, name='cargar'),
+    path('buscar_cie10/', views.buscar_cie10, name='buscar_cie10'),
+    path('terapia_cognitivo_conductual/', views.idea_view, name='terapia_cognitivo_conductual'),
+    path('agregar-opciones/', views.agregar_opciones, name='agregar_opciones'),
+    path('marcar_asistencia/<int:cita_id>/<str:estado>/', views.marcar_asistencia, name='marcar_asistencia'),
+    path('', include('pwa.urls')),
+    path('api/guardar_dato_ble', views.guardar_dato_ble, name='api/guardar_dato_ble'),
+    path('agregar-dato/', views.agregar_dato_sensor, name='agregar_dato_sensor'),
+    path('bluetooth_screen/', views.sensor_ble_view, name='bluetooth_screen'),
+]

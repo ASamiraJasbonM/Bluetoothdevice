@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css\style.css' %}" >
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='{% url 'menu' %}'">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <span class="header-title">Mis datos</span>
+    </header>
+
+
+    <div class="container">
+        <h2 class="text-primary">Pulsera</h2>
+
+        <div class="mb-4">
+            <strong class="text-info">Estado:</strong> {{ dato.estado }}
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong class="text-info">Hora:</strong> {{ dato.hora }}</p>
+                <p><strong class="text-info">Temperatura Corporal:</strong> {{ dato.temperatura_corporal }}</p>
+                <p><strong class="text-info">Temperatura Ambiental:</strong> {{ dato.temperatura_ambiental }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong class="text-info">BPM:</strong> {{ dato.bpm }}</p>
+                <p><strong class="text-info">AvgBPM:</strong> {{ dato.avg_bpm }}</p>
+                <p><strong class="text-info">Humedad:</strong> {{ dato.humedad }}</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

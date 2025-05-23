@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css\style.css' %}" >
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='{% url 'menu' %}'">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <span class="header-title">Mis datos</span>
+    </header>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="user-info">
+            <h3>Información del Usuario</h3>
+            <p><strong>Nombre:</strong>
+                <input type="text" name="usuario_nombre" value="{{ usuario_nombre }}" required>
+            </p>
+            <p><strong>Apellidos:</strong>
+                <input type="text" name="usuario_apellidos" value="{{ usuario_apellidos }}" required>
+            </p>
+            <p><strong>Correo:</strong>
+                <input type="email" name="usuario_correo" value="{{ usuario_correo }}" required>
+            </p>
+            <p><strong>Fecha de Nacimiento:</strong>
+                <input type="date" name="usuario_fechanacimiento" value="{{ usuario_fechanacimiento|date:'Y-m-d' }}">
+            </p>
+            <p><strong>Dirección:</strong>
+                <input type="text" name="usuario_direccion" value="{{ usuario_direccion }}">
+            </p>
+        </div>
+
+
+        <div class="participante-info">
+            <h3>Datos del Participante</h3>
+            <p><strong>Correo 1:</strong>
+                <input type="email" name="correo1" value="{{ datos_participante.correo1 }}">
+            </p>
+            <p><strong>Correo 2:</strong>
+                <input type="email" name="correo2" value="{{ datos_participante.correo2 }}">
+            </p>
+            <p><strong>Estado Civil:</strong>
+                <input type="text" name="estciv" value="{{ datos_participante.estciv }}">
+            </p>
+            <p><strong>Sexo:</strong>
+                <input type="text" name="sexo" value="{{ datos_participante.sexo }}">
+            </p>
+            <p><strong>Contacto de Emergencia 1:</strong>
+                <input type="text" name="contactoE1" value="{{ datos_participante.contactoE1 }}">
+            </p>
+            <p><strong>Teléfono de Emergencia 1:</strong>
+                <input type="text" name="NumConE1" value="{{ datos_participante.NumConE1 }}">
+            </p>
+        </div>
+
+
+        <button type="submit">Guardar cambios</button>
+    </form>
+
+</body>
+</html>

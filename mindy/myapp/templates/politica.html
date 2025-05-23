@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy-Crear cuenta</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static '\css\style.css' %}" >
+
+</head>
+
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='{% url 'home' %}'">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <span class="header-title">Política de tratamiento de datos</span>
+    </header>
+    <div class="form-container">
+<p><strong>Última actualización:</strong> [fecha]</p>
+
+    <h2>1. Responsable del Tratamiento</h2>
+    <p>
+        La Universidad del Rosario, identificada con NIT [insertar NIT], con domicilio en Bogotá, Colombia, en calidad de institución educativa y responsable del Proyecto Mindy, será la encargada del tratamiento de los datos personales recolectados a través de la aplicación UR Mindy.
+    </p>
+    <p>
+        <strong>Contacto:</strong><br>
+        📧 [correo electrónico del proyecto]<br>
+        📍 Dirección: [dirección institucional]
+    </p>
+
+    <h2>2. Finalidad del Tratamiento</h2>
+    <p>Los datos personales recolectados a través de UR Mindy serán utilizados con las siguientes finalidades:</p>
+    <ul>
+        <li>Brindar servicios de recordatorio de citas y seguimiento clínico.</li>
+        <li>Realizar monitoreo y soporte remoto a los usuarios por parte de profesionales de la salud vinculados al Proyecto Mindy.</li>
+        <li>Analizar indicadores de salud como presión arterial, consumo de medicamentos, y estado clínico reportado por el usuario.</li>
+        <li>Emitir alertas automatizadas o mensajes personalizados relacionados con el estado de salud del usuario.</li>
+        <li>Gestionar la atención médica oportuna en casos que lo requieran.</li>
+        <li>Cumplir con obligaciones académicas, científicas y éticas del proyecto de investigación.</li>
+        <li>Realizar análisis estadísticos, estudios clínicos o publicaciones científicas, previa anonimización de los datos.</li>
+    </ul>
+
+    <h2>3. Tipos de Datos Recolectados</h2>
+    <p>La aplicación podrá recolectar, almacenar y procesar datos de las siguientes categorías:</p>
+    <ul>
+        <li><strong>Datos de identificación personal:</strong> nombre, número de documento, correo electrónico, número de teléfono.</li>
+        <li><strong>Datos sensibles de salud:</strong> historial médico, diagnósticos, signos vitales (presión arterial, frecuencia cardíaca), consumo de medicamentos, síntomas, tratamientos previos, citas médicas.</li>
+        <li><strong>Datos técnicos:</strong> registros de uso de la app, horarios de acceso, reportes de fallos, etc.</li>
+    </ul>
+    <p><strong>Nota:</strong> El tratamiento de datos sensibles requiere consentimiento explícito del titular.</p>
+
+    <h2>4. Derechos del Titular</h2>
+    <p>Como titular de los datos, usted tiene derecho a:</p>
+    <ul>
+        <li>Conocer, actualizar y rectificar sus datos personales.</li>
+        <li>Solicitar prueba del consentimiento otorgado.</li>
+        <li>Ser informado sobre el uso que se ha dado a sus datos.</li>
+        <li>Revocar el consentimiento y/o solicitar la supresión de sus datos cuando no se respeten los principios constitucionales y legales.</li>
+        <li>Acceder gratuitamente a sus datos personales.</li>
+    </ul>
+
+    <h2>5. Almacenamiento y Seguridad</h2>
+    <p>
+        UR Mindy implementa medidas de seguridad físicas, técnicas y administrativas para proteger los datos personales contra acceso no autorizado, pérdida, alteración o destrucción. Los datos serán almacenados en servidores seguros gestionados por la Universidad del Rosario o proveedores con contratos que garanticen la confidencialidad.
+    </p>
+
+    <h2>6. Transferencia de Datos</h2>
+    <p>
+        Los datos no serán compartidos con terceros no autorizados. En caso de ser requeridos para estudios clínicos o propósitos científicos, estos serán anonimizados para proteger la identidad del usuario.
+    </p>
+
+    <h2>7. Vigencia</h2>
+    <p>
+        La presente política entra en vigencia a partir de su publicación y los datos serán tratados por el tiempo necesario para cumplir con las finalidades mencionadas o el plazo requerido por normativas legales aplicables.
+    </p>
+    </div>
+
+</body>
+</html>

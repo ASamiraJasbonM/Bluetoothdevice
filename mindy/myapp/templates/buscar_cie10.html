@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css\style.css' %}" >
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='{% url 'menu_profesional' %}'">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <span class="header-title">Buscar codigo</span>
+    </header>
+    <div class="form-container">
+    <form method="get">
+    <input type="text" name="q" placeholder="Buscar por descripción..." value="{{ query }}">
+    <button type="submit">Buscar</button>
+</form>
+{% if resultados %}
+    <ul>
+        {% for item in resultados %}
+            <li>
+                <strong>{{ item.codigo }}</strong> - {{ item.nombre }} ({{ item.tabla }})<br>
+                <em>{{ item.descripcion }}</em><br>
+                <button onclick="agregarDiagnostico('{{ item.codigo }}', '{{ item.nombre|escapejs }}', '{{ item.tabla|escapejs }}')">Agregar</button>
+            </li>
+        {% endfor %}
+    </ul>
+{% elif query %}
+    <p>No se encontraron resultados.</p>
+{% endif %}
+
+<hr>
+<h3>Diagnóstico</h3>
+<ul id="listaDiagnostico"></ul>
+
+<script>
+    // Cargar desde localStorage
+    const listaDiagnostico = new Map(JSON.parse(localStorage.getItem('diagnosticos') || '[]'));
+    const ul = document.getElementById("listaDiagnostico");
+
+    function renderLista() {
+        ul.innerHTML = '';
+        listaDiagnostico.forEach((value, codigo) => {
+            const li = document.createElement("li");
+            li.innerHTML = `<strong>${codigo}</strong> - ${value.nombre} (${value.tabla})
+                <button onclick="eliminarDiagnostico('${codigo}')">Eliminar</button>`;
+            ul.appendChild(li);
+        });
+    }
+
+    function agregarDiagnostico(codigo, nombre, tabla) {
+        if (listaDiagnostico.has(codigo)) {
+            alert("Este diagnóstico ya fue agregado.");
+            return;
+        }
+        listaDiagnostico.set(codigo, { nombre: nombre, tabla: tabla });
+        guardarEnLocalStorage();
+        renderLista();
+    }
+
+    function eliminarDiagnostico(codigo) {
+        listaDiagnostico.delete(codigo);
+        guardarEnLocalStorage();
+        renderLista();
+    }
+
+    function guardarEnLocalStorage() {
+        localStorage.setItem('diagnosticos', JSON.stringify([...listaDiagnostico]));
+    }
+
+    // Render inicial
+    renderLista();
+</script>
+</body>
+</html>

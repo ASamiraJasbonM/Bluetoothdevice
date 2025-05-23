@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+{% load custom_filters %}
+{% load static %}
+
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css\style.css' %}" >
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                font-size: 16px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            p {
+                font-size: 18px;
+            }
+
+            .btn {
+                width: 100%;
+                font-size: 16px;
+                padding: 12px;
+            }
+
+            .respuesta-container,
+            .vertical-layout,
+            .two-columns-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .column {
+                width: 100%;
+                align-items: stretch;
+            }
+
+            .column button {
+                width: 100%;
+            }
+
+            .two-columns-container {
+                gap: 10px;
+                position: relative;
+            }
+
+            .svg-lines {
+                display: none; /* ocultar líneas en móvil si son decorativas o complican la UX */
+            }
+
+            header {
+                width: 100%;
+                display: flex;
+                justify-content: start;
+                align-items: center;
+                padding: 10px;
+                background-color: #15c1fd;
+                color: white;
+            }
+
+            .header-title {
+                margin-left: 10px;
+                font-size: 18px;
+            }
+
+            .back-btn {
+                background: none;
+                border: none;
+                cursor: pointer;
+            }
+
+            textarea {
+                width: 100%;
+                font-size: 16px;
+                padding: 10px;
+            }
+        }
+</style>
+</head>
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='{% url 'menu' %}'">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <span class="header-title">Ayuda</span>
+    </header>
+
+    <form method="post">
+        {% csrf_token %}
+        {% for pregunta in preguntas %}
+            <div>
+                <p><strong>{{ pregunta.numero_pregunta }}. {{ pregunta.pregunta }}</strong></p>
+
+                {% if pregunta.tipo_pregunta == 'AB' %}
+                    <textarea name="respuesta_{{ pregunta.id }}" rows="3"></textarea>
+
+                {% elif pregunta.tipo_pregunta == 'VF' %}
+                    {% for i in "12"|make_list %}
+                        {% with key_posible="posible_respuesta_"|add:i key_valor="valor_respuesta_"|add:i %}
+                            {% with posible=pregunta|get_dynamic:key_posible valor=pregunta|get_dynamic:key_valor %}
+                                {% if posible %}
+                                    <label>
+                                        <input type="radio" name="respuesta_{{ pregunta.id }}" value="{{ valor }}">
+                                        {{ posible }}
+                                    </label><br>
+                                {% endif %}
+                            {% endwith %}
+                        {% endwith %}
+                    {% endfor %}
+
+                {% elif pregunta.tipo_pregunta in 'OMU,OMUV,OMUC,OMM,OMMV,OMMC,PRP' %}
+
+                    {% if pregunta.tipo_pregunta == 'OMUV' or pregunta.tipo_pregunta == 'OMMV' %}
+                        <div class="vertical-layout">
+                            {% for i in "1234567891011121314151617181920"|make_list %}
+                                {% with key="posible_respuesta_"|add:i %}
+                                    {% with posible=pregunta|get_dynamic:key %}
+                                        {% if posible and forloop.counter <= pregunta.numero_opciones_respuesta %}
+                                            <button type="button"
+                                                    class="btn"
+                                                    data-group="{{ pregunta.id }}"
+                                                    onclick="handleClick(this, '{{ pregunta.id }}', '{{ pregunta.tipo_pregunta }}')">
+                                                {{ posible }}
+                                            </button>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endwith %}
+                            {% endfor %}
+                        </div>
+
+                    {% elif pregunta.tipo_pregunta == 'OMUC' or pregunta.tipo_pregunta == 'OMMC' or pregunta.tipo_pregunta == 'PRP' %}
+                        <div class="two-columns-container {% if pregunta.tipo_pregunta == 'PRP' %}prp-container{% endif %}" data-id="{{ pregunta.id }}">
+                            <svg class="svg-lines" id="svg_{{ pregunta.id }}"></svg>
+                            <div class="column left">
+                                {% for i in "1234567891011121314151617181920"|make_list %}
+                                    {% if forloop.counter|divisibleby:2 == False %}
+                                        {% with key="posible_respuesta_"|add:i %}
+                                            {% with posible=pregunta|get_dynamic:key %}
+                                                {% if posible and forloop.counter <= pregunta.numero_opciones_respuesta %}
+                                                    <button type="button"
+                                                            class="btn prp-btn"
+                                                            data-group="{{ pregunta.id }}"
+                                                            data-side="left"
+                                                            data-index="{{ forloop.counter }}"
+                                                            onclick="handlePRPClick(this)">
+                                                        {{ posible }}
+                                                    </button>
+                                                {% endif %}
+                                            {% endwith %}
+                                        {% endwith %}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="column right">
+                                {% for i in "1234567891011121314151617181920"|make_list %}
+                                    {% if forloop.counter|divisibleby:2 %}
+                                        {% with key="posible_respuesta_"|add:i %}
+                                            {% with posible=pregunta|get_dynamic:key %}
+                                                {% if posible and forloop.counter <= pregunta.numero_opciones_respuesta %}
+                                                    <button type="button"
+                                                            class="btn prp-btn"
+                                                            data-group="{{ pregunta.id }}"
+                                                            data-side="right"
+                                                            data-index="{{ forloop.counter }}"
+                                                            onclick="handlePRPClick(this)">
+                                                        {{ posible }}
+                                                    </button>
+                                                {% endif %}
+                                            {% endwith %}
+                                        {% endwith %}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                    {% else %}
+                        <div class="respuesta-container">
+                            {% for i in "1234567891011121314151617181920"|make_list %}
+                                {% with key="posible_respuesta_"|add:i %}
+                                    {% with posible=pregunta|get_dynamic:key %}
+                                        {% if posible and forloop.counter <= pregunta.numero_opciones_respuesta %}
+                                            <button type="button"
+                                                    class="btn"
+                                                    data-group="{{ pregunta.id }}"
+                                                    onclick="handleClick(this, '{{ pregunta.id }}', '{{ pregunta.tipo_pregunta }}')">
+                                                {{ posible }}
+                                            </button>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endwith %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <input type="hidden" name="respuesta_{{ pregunta.id }}" id="respuesta_{{ pregunta.id }}">
+                {% endif %}
+            </div>
+        {% endfor %}
+        <br>
+        <button type="submit" class="btn">Enviar Respuestas</button>
+    </form>
+
+    <script>
+        const respuestas = {};
+        const prpSelections = {}; // para PRP
+
+        function updateHiddenInput(name, value) {
+            let input = document.getElementById(name);
+            if (input) {
+                input.value = value;
+            }
+        }
+
+        function handleOMU(button, preguntaId) {
+            document.querySelectorAll(`.btn[data-group='${preguntaId}']`).forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+            respuestas[preguntaId] = button.textContent;
+            updateHiddenInput(`respuesta_${preguntaId}`, button.textContent);
+        }
+
+        function handleOMM(button, preguntaId) {
+            const isSelected = button.classList.toggle('selected');
+            if (!respuestas[preguntaId]) respuestas[preguntaId] = [];
+
+            if (isSelected) {
+                if (respuestas[preguntaId].length < 2) {
+                    respuestas[preguntaId].push(button.textContent);
+                } else {
+                    button.classList.remove('selected');
+                }
+            } else {
+                respuestas[preguntaId] = respuestas[preguntaId].filter(item => item !== button.textContent);
+            }
+            updateHiddenInput(`respuesta_${preguntaId}`, respuestas[preguntaId].join(','));
+        }
+
+        function handleClick(button, preguntaId, tipo) {
+            if (["OMU", "OMUV", "OMUC"].includes(tipo)) {
+                handleOMU(button, preguntaId);
+            } else if (["OMM", "OMMV", "OMMC"].includes(tipo)) {
+                handleOMM(button, preguntaId);
+            }
+        }
+
+        function handlePRPClick(button) {
+            const preguntaId = button.dataset.group;
+            const side = button.dataset.side;
+            const index = button.dataset.index;
+
+            if (!prpSelections[preguntaId]) prpSelections[preguntaId] = { left: null, right: null, connections: [] };
+            const svg = document.getElementById("svg_" + preguntaId);
+            const otherSide = side === "left" ? "right" : "left";
+
+            // Toggle selección
+            if (button.classList.contains("selected")) {
+                button.classList.remove("selected");
+                if (prpSelections[preguntaId][side]?.button === button) {
+                    prpSelections[preguntaId][side] = null;
+                }
+                removeLine(svg, preguntaId, button);
+                return;
+            }
+
+            // Solo puede estar uno seleccionado por lado
+            document.querySelectorAll(`.btn.prp-btn[data-group='${preguntaId}'][data-side='${side}']`).forEach(btn => btn.classList.remove("selected"));
+            button.classList.add("selected");
+            prpSelections[preguntaId][side] = { button, index };
+
+            if (prpSelections[preguntaId]["left"] && prpSelections[preguntaId]["right"]) {
+                const leftBtn = prpSelections[preguntaId]["left"].button;
+                const rightBtn = prpSelections[preguntaId]["right"].button;
+
+                prpSelections[preguntaId].connections = prpSelections[preguntaId].connections.filter(c => c.left !== leftBtn && c.right !== rightBtn);
+                prpSelections[preguntaId].connections.push({ left: leftBtn, right: rightBtn });
+
+                drawConnections(preguntaId);
+                updateHiddenInput(`respuesta_${preguntaId}`, JSON.stringify(prpSelections[preguntaId].connections.map(c => ({ left: c.left.textContent, right: c.right.textContent }))));
+
+                leftBtn.classList.remove("selected");
+                rightBtn.classList.remove("selected");
+                prpSelections[preguntaId].left = null;
+                prpSelections[preguntaId].right = null;
+            }
+        }
+
+        function drawConnections(preguntaId) {
+            const svg = document.getElementById("svg_" + preguntaId);
+            svg.innerHTML = "";
+            const connections = prpSelections[preguntaId].connections;
+            connections.forEach(({ left, right }) => {
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                const leftRect = left.getBoundingClientRect();
+                const rightRect = right.getBoundingClientRect();
+                const containerRect = svg.parentElement.getBoundingClientRect();
+
+                line.setAttribute("x1", leftRect.right - containerRect.left);
+                line.setAttribute("y1", leftRect.top + leftRect.height/2 - containerRect.top);
+                line.setAttribute("x2", rightRect.left - containerRect.left);
+                line.setAttribute("y2", rightRect.top + rightRect.height/2 - containerRect.top);
+                line.setAttribute("stroke", "black");
+                line.setAttribute("stroke-width", "2");
+                svg.appendChild(line);
+            });
+        }
+
+        function removeLine(svg, preguntaId, button) {
+            const connections = prpSelections[preguntaId].connections;
+            prpSelections[preguntaId].connections = connections.filter(c => c.left !== button && c.right !== button);
+            drawConnections(preguntaId);
+            updateHiddenInput(`respuesta_${preguntaId}`, JSON.stringify(prpSelections[preguntaId].connections.map(c => ({ left: c.left.textContent, right: c.right.textContent }))));
+        }
+    </script>
+</body>
+
+</html>

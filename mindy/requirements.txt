@@ -1,0 +1,11 @@
+django
+pillow
+django-admin-interface
+django-crispy-forms
+django-rest-framework
+django-pwa
+bleak
+pandas
+openpyxl
+crispy_bootstrap4
+apscheduler

@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css\style.css' %}" >
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+
+<body>
+    <header>
+    <button class="menu-btn" onclick="toggleSidebar()">
+        <svg width="30" height="30" viewBox="0 0 100 80" fill="white">
+            <rect width="100" height="15"></rect>
+            <rect y="30" width="100" height="15"></rect>
+            <rect y="60" width="100" height="15"></rect>
+        </svg>
+    </button>
+    <span class="header-title">Menu general</span>
+    </header>
+<!-- Menú lateral oculto -->
+    <div id="sidebar" class="sidebar">
+        <a href="{% url 'home' %}">Cerrar sesión</a>
+        <a href="{% url 'cambiar_contraseña' %}">Cambiar contraseña</a>
+    </div>
+
+    <div class="cards-container">
+    <a href="{% url 'new-patient' %}" class="card-link">
+    <div class="card-container">
+        <div class="card-image-wrapper">
+            <img src="{% static 'img/agregar.png' %}" alt="Imagen de la carta" class="card-image">
+        </div>
+        <div class="card-line"></div>
+        <div class="card-text">Agregar usuario</div>
+    </div>
+
+    <a href="{% url 'foro' %}" class="card-link">
+    <div class="card-container">
+        <div class="card-image-wrapper">
+            <img src="{% static 'img/foro.png' %}"alt="Imagen de la carta" class="card-image">
+        </div>
+        <div class="card-line"></div>
+        <div class="card-text">Comunicación investigador</div>
+    </div>
+    </a>
+
+
+    <a href="{% url 'buscar_usuario' %}" class="card-link">
+    <div class="card-container">
+        <div class="card-image-wrapper">
+        <img src="{% static 'img/buscar-usuario.png' %}"alt="Imagen de la carta" class="card-image">
+        </div>
+        <div class="card-line"></div>
+        <div class="card-text">Datos usuarios</div>
+    </div>
+    </a>
+
+    <a href="{% url 'usuario' %}" class="card-link">
+    <div class="card-container">
+        <div class="card-image-wrapper">
+        <img src="{% static 'img/graficas.png' %}"alt="Imagen de la carta" class="card-image">
+        </div>
+        <div class="card-line"></div>
+        <div class="card-text">Otros</div>
+    </div>
+    </a>
+    </div>
+    </div>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("active");
+        }
+
+        // Cierra el sidebar si haces clic fuera de él
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById("sidebar");
+            const menuBtn = document.querySelector('.menu-btn');
+            
+            if (
+                sidebar.classList.contains('active') &&
+                !sidebar.contains(event.target) &&
+                !menuBtn.contains(event.target)
+            ) {
+                sidebar.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css\style.css' %}" >
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f1e9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .foro-container {
+            max-width: 700px;
+            background: #f8f1e9;
+            margin: 80px auto 0 auto;
+        }
+
+        .tema {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tema p {
+            margin: 5px 0;
+        }
+
+        .formulario {
+            background-color: #dff0d8;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 10px;
+        }
+
+        .formulario input[type="text"] {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .formulario input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .formulario input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .fecha {
+            color: #888;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<!-- Íconos -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='{% url 'menu_profesional' %}'">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <span class="header-title">Modulo Educativo</span>
+    </header>
+    <div class="foro-container">
+
+        {% for tema in temas %}
+        <div class="tema">
+            <p><strong>{{ tema.tema }}</strong></p>
+            <p class="fecha">Publicado: {{ tema.fechapub|date:"d M Y H:i" }}</p>
+        </div>
+        {% empty %}
+        <p>No hay temas aún. Sé el primero en publicar uno.</p>
+        {% endfor %}
+
+        <div class="formulario">
+            <h3>Agregar nuevo tema</h3>
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" name="tema" placeholder="Escribe tu tema aquí..." maxlength="20" required>
+                <br>
+                <input type="submit" value="Agregar">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

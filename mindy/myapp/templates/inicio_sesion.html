@@ -1,0 +1,77 @@
+{% load static %}
+{% load pwa %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static '\css\style.css' %}" >
+
+    {% progressive_web_app_meta %}
+
+</head>
+<link rel="manifest" href="{% static 'js/manifest.json' %}">
+<meta name="theme-color" content="#000000">
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("{% static 'js/serviceworker.js' %}")
+        .then(function(registration) {
+            console.log("Service Worker registrado con éxito:", registration);
+        })
+        .catch(function(error) {
+            console.log("Error al registrar el Service Worker:", error);
+        });
+    }
+</script>
+<body>
+    <div class="container"> 
+        <img src="{% static 'img/UR-Mindy.png' %}" class="logo" alt="UR-Mindy">
+        <h3>Iniciar Sesión</h3>
+
+        <form method="POST" action="{% url 'home' %}">
+            {% csrf_token %}
+            <div class="input-group">
+                <i>📧</i>
+                <input type="email" name="correo" placeholder="Correo electrónico" required>
+            </div>
+            <div class="input-group">
+                <i>🔑</i>
+                <input type="password" name="password" placeholder="Contraseña" required>
+            </div>
+            <button type="submit" class="button">Ingresar</button>
+        </form>
+
+        <!-- Botón separado para crear cuenta -->
+        <form method="GET" action="{% url 'crear_cuenta' %}">
+            <button type="submit" class="button2">Crear cuenta</button>
+        </form>
+                <form method="GET" action="{% url 'crear_cuenta' %}">
+            <button type="submit" class="button2">¿Olvidó su contraseña?</button>
+        </form>
+
+
+    </div> 
+
+
+    
+
+    
+</body>
+    <footer id="p_footer" style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #15c1fd; padding: 1em 0; text-align: center; border-top: 1px solid #ccc;">
+        <div class="maxwidth">
+            <div>
+                <a href="/support/">Sobre la aplicación</a>
+                &nbsp;.&nbsp;
+            &nbsp;.&nbsp;
+            <a href="/politica/">Política de privacidad</a>
+            &nbsp;.&nbsp;
+            <a href="/terminos/">Términos de servicio</a>
+            <div style="height: 2px;"></div>
+            <div>
+                <!-- Aquí puedes agregar más contenido si lo necesitas -->
+            </div>
+        </div>
+    </footer>
+</html>

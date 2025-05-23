@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css\style.css' %}" >
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='{% url 'menu_profesional' %}'">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <span class="header-title">Nuevo Paciente</span>
+    </header>
+    <div class="form-container">
+        {% load crispy_forms_tags %}
+        <form action="" class="formulario_contacto" method="post">
+            {% csrf_token %}
+
+            <h3>Datos del participante</h3>
+            {{ form_usuario|crispy }}
+
+            <h3>Historial médico</h3>
+            {{ form_historial|crispy }}
+
+            <button type="submit" id="btnEnviar" class="button">Enviar</button>
+        </form>
+        {{ mensaje }}
+
+        <div class="container">
+            <form method="post" enctype="multipart/form-data" action="{% url 'import_excel' %}">
+                {% csrf_token %}
+                <label for="excel_file">Importar pacientes desde Excel:</label>
+                <input type="file" name="excel_file" id="excel_file" accept=".xlsx" required>
+                <button type="submit">Importar desde Excel</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

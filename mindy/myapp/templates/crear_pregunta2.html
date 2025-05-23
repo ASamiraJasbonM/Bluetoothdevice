@@ -1,0 +1,68 @@
+<h2>Crear Pregunta</h2>
+<button onclick="addQuestion()">Crear pregunta</button>
+
+<form method="POST" action="{% url 'guardar_preguntas' %}">
+  {% csrf_token %}
+  <div id="preguntas-container"></div>
+  <button type="submit">Guardar todas</button>
+</form>
+
+<script>
+let preguntaCount = 0;
+
+function addQuestion() {
+  preguntaCount++;
+  const container = document.getElementById('preguntas-container');
+
+  const div = document.createElement('div');
+  div.className = 'pregunta-bloque';
+  div.innerHTML = `
+    <hr>
+    <label>Tipo de pregunta:</label>
+    <select name="tipo_${preguntaCount}" onchange="cambiarTipo(${preguntaCount}, this.value)">
+      <option value="">--Seleccionar--</option>
+      <option value="abierta">Abierta</option>
+      <option value="vf">Verdadero o Falso</option>
+      <option value="om_unica">Opción múltiple (una respuesta)</option>
+      <option value="om_multiple">Opción múltiple (múltiples respuestas)</option>
+    </select>
+    <br>
+    <label>Texto de la pregunta:</label>
+    <textarea name="texto_${preguntaCount}" rows="2" cols="40"></textarea>
+    <div id="respuestas_${preguntaCount}"></div>
+  `;
+  container.appendChild(div);
+}
+
+function cambiarTipo(id, tipo) {
+  const contenedor = document.getElementById(`respuestas_${id}`);
+  contenedor.innerHTML = ''; // Limpiar respuestas previas
+
+  let html = '';
+
+  if (tipo === 'abierta') {
+    html += `<p>Pregunta abierta, no requiere respuestas predefinidas.</p>`;
+  } else if (tipo === 'vf') {
+    html += `
+      <label>Verdadero:</label>
+      <input type="text" name="respuesta_${id}_0_texto" value="Verdadero">
+      <input type="number" name="respuesta_${id}_0_valor" placeholder="Valor">
+      <br>
+      <label>Falso:</label>
+      <input type="text" name="respuesta_${id}_1_texto" value="Falso">
+      <input type="number" name="respuesta_${id}_1_valor" placeholder="Valor">
+    `;
+  } else {
+    for (let i = 0; i < 4; i++) {
+      html += `
+        <label>Opción ${i + 1}:</label>
+        <input type="text" name="respuesta_${id}_${i}_texto" placeholder="Texto">
+        <input type="number" name="respuesta_${id}_${i}_valor" placeholder="Valor">
+        <br>
+      `;
+    }
+  }
+
+  contenedor.innerHTML = html;
+}
+</script>

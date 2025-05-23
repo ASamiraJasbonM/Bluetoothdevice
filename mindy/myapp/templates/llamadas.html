@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css\style.css' %}" >
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+<script>
+    function copiarAlPortapapeles(numero) {
+    navigator.clipboard.writeText(numero).then(() => {
+        alert("Teléfono copiado: " + numero);
+    });
+    }
+
+    function mostrarDescripcion(id) {
+    const tooltip = document.getElementById(id);
+    tooltip.classList.add("show");
+
+    // Ocultar luego de 3 segundos
+    setTimeout(() => {
+        tooltip.classList.remove("show");
+    }, 3000);
+}
+</script>
+<!-- Íconos -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='{% url 'menu' %}'">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <span class="header-title">Ayuda</span>
+    </header>
+    <div class="container2">
+        <!-- Bloque 1 -->
+        <div class="block" style="position: relative;">
+            <div class="row">
+                <div class="nombre" onclick="mostrarDescripcion('desc1')">Linea 106 chat</div>
+                <div class="telefono" onclick="copiarAlPortapapeles('300758933')">
+                    <i class="fas fa-phone"></i> 300758933
+                </div>
+            </div>
+            <div class="tooltip" id="desc1">Línea para atención en salud 24/7</div>
+        </div>
+
+        <!-- Bloque 2 -->
+        <div class="block">
+        <div class="row">
+            <div class="nombre" onclick="mostrarDescripcion('desc1')">Linea Purpura</div>
+            <div class="telefono" onclick="copiarAlPortapapeles('018000112157')">
+            <i class="fas fa-phone"></i> 018000112157
+            </div>
+        </div>
+        <div class="tooltip" id="desc1">Línea para atención en salud 24/7</div>
+        </div>
+
+        <!-- Bloque 3 -->
+        <div class="block">
+        <div class="row">
+            <div class="nombre" onclick="mostrarDescripcion('desc1')">Chat whatsapp</div>
+            <div class="telefono" onclick="copiarAlPortapapeles('3007551846')">
+            <i class="fas fa-phone"></i> 3007551846
+            </div>
+        </div>
+        <div class="tooltip" id="desc1">Línea para atención en salud 24/7</div>
+        </div>
+
+        <!-- Bloque 4 -->
+        <div class="block">
+        <div class="row">
+            <div class="nombre" onclick="mostrarDescripcion('desc1')">Linea Calma</div>
+            <div class="telefono" onclick="copiarAlPortapapeles('018000423614')">
+            <i class="fas fa-phone"></i> 018000423614
+            </div>
+        </div>
+        <div class="tooltip" id="desc1">Línea para atención en salud 24/7</div>
+        </div>
+
+
+        <!-- Bloque 5 -->
+        <div class="block">
+        <div class="row">
+            <div class="nombre" onclick="mostrarDescripcion('desc1')">Linea diversa</div>
+            <div class="telefono" onclick="copiarAlPortapapeles('3108644214')">
+            <i class="fas fa-phone"></i> 3108644214
+            </div>
+        </div>
+        <div class="tooltip" id="desc1">Línea para atención en salud 24/7</div>
+        </div>
+
+
+        <!-- Bloque 6 -->
+        <div class="block">
+        <div class="row">
+            <div class="nombre" onclick="mostrarDescripcion('desc1')">Linea salva vidas</div>
+            <div class="telefono" onclick="copiarAlPortapapeles('3117668666')">
+            <i class="fas fa-phone"></i> 3117668666
+            </div>
+        </div>
+        <div class="tooltip" id="desc1">Línea para atención en salud 24/7</div>
+        </div>
+
+    </div>
+
+</body>
+</html>

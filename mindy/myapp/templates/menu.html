@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css\style.css' %}" >
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+
+<body>
+    <header>
+    <button class="menu-btn" onclick="toggleSidebar()">
+        <svg width="30" height="30" viewBox="0 0 100 80" fill="white">
+            <rect width="100" height="15"></rect>
+            <rect y="30" width="100" height="15"></rect>
+            <rect y="60" width="100" height="15"></rect>
+        </svg>
+    </button>
+    <span class="header-title">Menu general</span>
+    </header>
+<!-- Menú lateral oculto -->
+    <div id="sidebar" class="sidebar">
+        <a href="{% url 'home' %}">Cerrar sesión</a>
+        <a href="{% url 'cambiar_contraseña' %}">Cambiar contraseña</a>
+    </div>
+
+    <div class="cards-container">
+    <a href="{% url 'usuario' %}" class="card-link">
+    <div class="card-container">
+        <div class="card-image-wrapper">
+            <img src="{% static 'img/user1.png' %}" alt="Imagen de la carta" class="card-image">
+        </div>
+        <div class="card-line"></div>
+        <div class="card-text">Mis datos</div>
+    </div>
+    </a>
+    <a href="{% url 'citas_paciente' %}" class="card-link">
+    <div class="card-container">
+        <div class="card-image-wrapper">
+            <img src="{% static 'img/cal.png' %}"alt="Imagen de la carta" class="card-image">
+        </div>
+        <div class="card-line"></div>
+        <div class="card-text">Mis citas</div>
+    </div>
+    <a href="{% url 'educativo' %}" class="card-link">
+    <div class="card-container">
+    <div class="card-image-wrapper">
+        <img src="{% static 'img/mod-ed.png' %}"alt="Imagen de la carta" class="card-image">
+        </div>
+        <div class="card-line"></div>
+        <div class="card-text">Modulo Educativo</div>
+    </div>
+
+    <a href="{% url 'menu' %}" class="card-link">
+    <div class="card-container">
+        <div class="card-image-wrapper">
+        <img src="{% static 'img/Mindysf.png' %}"alt="Imagen de la carta" class="card-image">
+        </div>
+        <div class="card-line"></div>
+        <div class="card-text">Mi seguimiento</div>
+    </div>
+    <a href="{% url 'llamadas' %}" class="card-link">
+    <div class="card-container">
+        <div class="card-image-wrapper">
+        <img src="{% static 'img/Call.png' %}"alt="Imagen de la carta" class="card-image">
+        </div>
+        <div class="card-line"></div>
+        <div class="card-text">Ayuda</div>
+    </div>
+    <a href="{% url 'bluetooth_screen' %}" class="card-link">
+    <div class="card-container">
+        <div class="card-image-wrapper">
+        <img src="{% static 'img/Pulsera.png' %}"alt="Imagen de la carta" class="card-image">
+        </div>
+        <div class="card-line"></div>
+        <div class="card-text">Mis mediciones</div>
+    </div>
+    </div>
+    </div>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("active");
+        }
+
+        // Cierra el sidebar si haces clic fuera de él
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById("sidebar");
+            const menuBtn = document.querySelector('.menu-btn');
+            
+            if (
+                sidebar.classList.contains('active') &&
+                !sidebar.contains(event.target) &&
+                !menuBtn.contains(event.target)
+            ) {
+                sidebar.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

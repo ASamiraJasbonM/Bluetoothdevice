@@ -1,0 +1,173 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css\style.css' %}" >
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        canvas {
+            max-width: 400px;
+            height: 300px !important;
+            margin: 20px auto;
+            display: block;
+        }
+        h2 {
+            text-align: center;
+        }
+    </style>
+
+</head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='{% url 'menu_profesional' %}'">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <span class="header-title">Nuevo Paciente</span>
+    </header>
+    <div class="form-container">
+
+    <h1>Exportar Datos a Excel y Visualizar Citas</h1>
+
+    <form method="get" action="{% url 'descargar_excel' %}">
+        <button type="submit" class="button">Descargar Archivo Excel</button>
+    </form>
+
+
+    <h2>Visualización Global de Participantes</h2>
+
+    <!-- Gráficas -->
+    <div class="charts-container">
+    <h2>Estado Civil de los Participantes</h2>
+    <canvas id="estcivChart"></canvas>
+
+    <h2>Sexo de los Participantes</h2>
+    <canvas id="sexoChart"></canvas>
+
+    <h2>Citas Asistidas e inasistidas</h2>
+    <canvas id="citasChart"></canvas>
+
+    <h2>Año de Nacimiento</h2>
+    <canvas id="nacimientosChart"></canvas>
+
+    <h2>Año de Inicio de Tratamiento</h2>
+    <canvas id="tratamientoChart"></canvas>
+
+    <h2>Última Consulta por Año</h2>
+    <canvas id="ultimasConsChart"></canvas>
+
+    <h2>Recaídas</h2>
+    <canvas id="recaidasChart"></canvas>
+
+    <h2>Diagnósticos</h2>
+    <canvas id="diagnosticoChart"></canvas>
+    </div>
+
+    <script>
+        // Convertimos las variables de Django a JavaScript
+        const sexos = {{ sexos|safe }};
+        const estciviles = {{ estciviles|safe }};
+        const asistidas = {{ asistidas|safe }};
+        const inasistidas = {{ inasistidas|safe }};
+        const nacimientos = {{ nacimientos|safe }};
+        const inicios_trat = {{ inicios_trat|safe }};
+        const ultimas_consultas = {{ ultimas_consultas|safe }};
+        const recaidas = {{ recaidas|safe }};
+        const diagnosticos = {{ diagnosticos|safe }};
+
+        function contarFrecuencias(data) {
+            return data.reduce((acc, val) => {
+                acc[val] = (acc[val] || 0) + 1;
+                return acc;
+            }, {});
+        }
+
+        function renderBarChart(id, labels, data, labelText) {
+            new Chart(document.getElementById(id), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: labelText,
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function renderPieChart(id, labels, data, labelText) {
+            new Chart(document.getElementById(id), {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: labelText,
+                        data: data,
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB',
+                            '#FFCE56',
+                            '#66BB6A',
+                            '#BA68C8'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                }
+            });
+        }
+
+        // Sexo
+        const sexoFreq = contarFrecuencias(sexos);
+        renderPieChart('sexoChart', Object.keys(sexoFreq), Object.values(sexoFreq), 'Distribución por sexo');
+
+        // Estado civil
+        const estcivFreq = contarFrecuencias(estciviles);
+        renderPieChart('estcivChart', Object.keys(estcivFreq), Object.values(estcivFreq), 'Distribución estado civil');
+
+        // Citas
+        renderBarChart('citasChart', ['Citas Asistidas', 'Citas Inasistidas'], [
+            asistidas.reduce((a, b) => a + b, 0),
+            inasistidas.reduce((a, b) => a + b, 0)
+        ], 'Cantidad total');
+
+        // Nacimientos por año
+        const nacimientosFreq = contarFrecuencias(nacimientos);
+        renderBarChart('nacimientosChart', Object.keys(nacimientosFreq), Object.values(nacimientosFreq), 'Nacimientos por año');
+
+        // Años de inicio de tratamiento
+        const tratFreq = contarFrecuencias(inicios_trat);
+        renderBarChart('tratamientoChart', Object.keys(tratFreq), Object.values(tratFreq), 'Inicio de tratamiento por año');
+
+        // Recaídas
+        const recaidasFreq = contarFrecuencias(recaidas.map(String));
+        renderBarChart('recaidasChart', Object.keys(recaidasFreq), Object.values(recaidasFreq), 'Número de recaídas');
+
+        // Diagnósticos
+        const diagFreq = contarFrecuencias(diagnosticos);
+        renderBarChart('diagnosticoChart', Object.keys(diagFreq), Object.values(diagFreq), 'Distribución diagnósticos');
+    </script>
+</body>
+</html>

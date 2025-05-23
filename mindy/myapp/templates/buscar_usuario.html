@@ -1,0 +1,213 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css\style.css' %}" >
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+
+<body>
+    <header>
+        <button class="back-btn" onclick="window.location.href='{% url 'menu_profesional' %}'">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <span class="header-title">Nuevo Paciente</span>
+    </header>
+    <main class="containerb">
+        <section class="search-section">
+            <h2>Buscar usuario por cédula</h2>
+            <form method="get" action="{% url 'buscar_usuario' %}">
+                {{ form.as_p }}
+                <button type="submit">Buscar</button>
+            </form>
+        </section>
+
+        {% if resultados %}
+        <div style="display: flex; justify-content: space-between;">
+            
+            <!-- Contenedor Izquierdo: Información del usuario -->
+            <div style="flex: 2; padding: 20px;">
+                <section class="results-section">
+                    <h2>Resultados</h2>
+
+                    <div class="user-info">
+                        <h3>Información del Usuario:</h3>
+                        {% if resultados.usuario %}
+                            <ul>
+                                <li>Nombre: {{ resultados.usuario.nombre }} {{ resultados.usuario.apellidos }}</li>
+                                <li>Correo: {{ resultados.usuario.correo }}</li>
+                                <li>Fecha de Nacimiento: {{ resultados.usuario.fechanacimiento }}</li>
+                                <li>Tipo: {{ resultados.usuario.tipoa }}</li>
+                                <li>Dirección: {{ resultados.usuario.direccion }}</li>
+                            </ul>
+                        {% else %}
+                            <p>No se encontró información del usuario.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="citas-info">
+                        <h3>Citas:</h3>
+                        {% if resultados.citas %}
+                            <table border="1">
+                                <tr>
+                                    <th>Día</th>
+                                    <th>Hora</th>
+                                    <th>Profesional</th>
+                                    <th>Asistida</th>
+                                </tr>
+                                {% for cita in resultados.citas %}
+                                    <tr>
+                                        <td>{{ cita.dia }}</td>
+                                        <td>{{ cita.hora }}</td>
+                                        <td>{{ cita.profesional }}</td>
+                                        <td>{{ cita.asistida }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        {% else %}
+                            <p>No se encontraron citas.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="participante-info">
+                        <h3>Participante:</h3>
+                        {% if resultados.participante %}
+                            <ul>
+                                <li>Estado Civil: {{ resultados.participante.estciv }}</li>
+                                <li>Sexo: {{ resultados.participante.sexo }}</li>
+                                <li>Contacto de Emergencia: {{ resultados.participante.contactoE1 }}</li>
+                                <li>Número de Emergencia: {{ resultados.participante.NumConE1 }}</li>
+                                <li>Citas Asistidas: {{ resultados.participante.citas_asistidas }}</li>
+                                <li>Citas Inasistidas: {{ resultados.participante.citas_inasistidas }}</li>
+                            </ul>
+                        {% else %}
+                            <p>No se encontró información del participante.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="historial-info">
+                        <h3>Historial Médico:</h3>
+                        {% if resultados.historial %}
+                            <table border="1">
+                                <tr>
+                                    <th>Inicio de Tratamiento</th>
+                                    <th>Última Consulta</th>
+                                    <th>Recaídas</th>
+                                    <th>Diagnóstico</th>
+                                    <th>Profesional</th>
+                                </tr>
+                                {% for hist in resultados.historial %}
+                                    <tr>
+                                        <td>{{ hist.iniciotrat }}</td>
+                                        <td>{{ hist.ultimocon }}</td>
+                                        <td>{{ hist.recaidas }}</td>
+                                        <td>{{ hist.diagnostico }}</td>
+                                        <td>{{ hist.profesional }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        {% else %}
+                            <p>No se encontró historial médico.</p>
+                        {% endif %}
+                    </div>
+
+                </section>
+            </div>
+
+            <!-- Contenedor Derecho: Acciones -->
+            <div style="flex: 1; padding: 20px; border-left: 1px solid #ccc;">
+                <h2>Acciones</h2>
+                <button onclick="modificarDatos()">Modificar Datos</button>
+                <br><br>
+                <button onclick="confirmarEliminacion()" class="danger-btn">Eliminar Usuario</button>
+                <br><br>
+                <button onclick="abrirModalEncuesta()" class="primary-btn">Agregar Encuesta</button>
+                <br><br>
+                
+            </div>
+
+        </div>
+
+        <!-- Modal de confirmación para eliminar -->
+        <div id="confirmModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <p>¿Está seguro que desea eliminar este usuario?</p>
+                <button onclick="eliminarUsuario()" class="danger-btn">Sí, eliminar</button>
+                <button onclick="cerrarModal()" class="secondary-btn">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- Modal para agregar encuesta -->
+        <div id="encuestaModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3>Agregar Encuesta</h3>
+                <input type="text" placeholder="Buscar encuesta..." id="buscadorEncuesta">
+                <div id="resultadosEncuestas">
+                    <!-- Aquí se mostrarían las encuestas disponibles -->
+                </div>
+                <button onclick="agregarEncuestaSeleccionada()" class="primary-btn">Agregar</button>
+                <button onclick="cerrarModalEncuesta()" class="secondary-btn">Cerrar</button>
+            </div>
+        </div>
+        <div class="onoffswitch ">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="mature-switch">
+                        <label class="onoffswitch-label" for="mature-switch">
+                            <div class="onoffswitch-inner">
+                            <span class="on">ON</span>
+                            <span class="off">OFF</span>
+                            </div>
+                            <span class="onoffswitch-switch"></span>
+                        </label>
+            </div>
+
+        {% endif %}
+    </main>
+
+    <script>
+        {% comment %} function modificarDatos() {
+            window.location.href = '{% url "menu_profesional" usuario_id=resultados.usuario.id %}';
+        } {% endcomment %}
+
+        function confirmarEliminacion() {
+            document.getElementById('confirmModal').style.display = 'block';
+        }
+
+        function cerrarModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        function eliminarUsuario() {
+            cerrarModal();
+            alert('Usuario eliminado (simulado)');
+        }
+
+        function abrirModalEncuesta() {
+            document.getElementById('encuestaModal').style.display = 'block';
+        }
+
+        function cerrarModalEncuesta() {
+            document.getElementById('encuestaModal').style.display = 'none';
+        }
+        function activarPremium() {
+            var switchElement = document.getElementById('premiumSwitch');
+            if (switchElement.checked) {
+                alert('Módulo premium activado');
+            } else {
+                alert('Módulo premium desactivado');
+            }
+        }
+        function agregarEncuestaSeleccionada() {
+            cerrarModalEncuesta();
+            alert('Encuesta agregada (simulado)');
+        }
+    </script>
+</body>
+</html>

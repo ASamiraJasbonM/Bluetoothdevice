@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR-Mindy</title>
+    <link rel="icon" href="{% static 'img/icon.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static '\css\style.css' %}" >
+
+</head>
+
+<body>
+    <h1>Crear una nueva pregunta</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Pregunta</legend>
+            {{ pregunta_form.as_p }}
+        </fieldset>
+
+        <fieldset>
+            <legend>Respuestas</legend>
+            {{ respuesta_formset.management_form }}
+            {% for form in respuesta_formset %}
+                <div style="margin-bottom: 10px;">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </fieldset>
+
+        <button type="submit">Guardar Pregunta</button>
+    </form>
+</body>
+</html>
